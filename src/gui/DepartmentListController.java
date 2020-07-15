@@ -36,6 +36,7 @@ public class DepartmentListController implements Initializable{
 	}
 	
 	public void setDepartmentService(DepartmentService service) {
+		// Delegando a função de instanciar o department service à outra função, para n gerar uma dependência tão forte
 		this.service = service;
 	}
 	
@@ -43,6 +44,7 @@ public class DepartmentListController implements Initializable{
 		if (service == null)
 			throw new IllegalStateException("Service was null.");
 		
+		// Adicionar a lista de departamentos à tableView
 		List <Department> list = service.findAll();
 		obsList = FXCollections.observableArrayList(list);
 		tableViewDepartment.setItems(obsList);
@@ -55,9 +57,11 @@ public class DepartmentListController implements Initializable{
 	}
 
 	private void initializeNodes() {
+		// Inicializar os nodos da tableView
 		tableColId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		
+		// Para que a tabela se adapte ao redimensionamento da tela
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewDepartment.prefHeightProperty().bind(stage.heightProperty());
 	}

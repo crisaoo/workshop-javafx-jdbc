@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import application.Main;
 import gui.util.Alerts;
@@ -32,12 +33,15 @@ public class MainViewController implements Initializable{
 	
 	@FXML
 	public void onMenuItemDepartmentAction() {
-		loadDepartmentView("/gui/DepartmentListView.fxml");
+		loadView("/gui/DepartmentListView.fxml", (DepartmentListController controller) ->{
+			controller.setDepartmentService(new DepartmentService());
+			controller.updateTableViewData();
+		});
 	}
 	
 	@FXML
 	public void onMenuItemAboutAction() {
-		loadView("/gui/About.fxml");
+		loadView("/gui/About.fxml", x -> {});
 	}
 	
 	
@@ -45,44 +49,32 @@ public class MainViewController implements Initializable{
 	public void initialize(URL url, ResourceBundle rb) {
 	}
 
-	private synchronized void loadView (String path) {
+	// synchronized: para que não ocorra erro em tempo de execução
+	// T: generics
+	// Consumer: uma ação
+	private synchronized <T> void loadView (String path, Consumer <T> initializingAction) {
 		try {
+			// Carrego a tela de acordo com o caminho do arquivo .fxml
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
 			VBox newVBox = loader.load();
 			
+			// Pego a VBox da cena principal e guardo-a
 			Scene mainScene = Main.getMainScene();
 			VBox mainVBox = (VBox)((ScrollPane)mainScene.getRoot()).getContent();
 			
+			// Crio um node para guardar a barra de menu
 			Node mainMenu = mainVBox.getChildren().get(0);
+			// Adiciono ao main vbox a barra de menu e o conteúdo do arquivo contido no path
 			mainVBox.getChildren().clear();
 			mainVBox.getChildren().add(mainMenu);
 			mainVBox.getChildren().addAll(newVBox.getChildren());
+			
+			//Para que a ação, no qual foi parametrizada, ocorra
+			T controller = loader.getController();
+			initializingAction.accept(controller);
 		}
 		catch (IOException e) {
 			Alerts.showAlert("Error", "Error loading view", e.getMessage(), AlertType.ERROR);
 		}
-	}
-	
-	
-		private synchronized void loadDepartmentView (String path) {
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
-				VBox newVBox = loader.load();
-				
-				Scene mainScene = Main.getMainScene();
-				VBox mainVBox = (VBox)((ScrollPane)mainScene.getRoot()).getContent();
-				
-				Node mainMenu = mainVBox.getChildren().get(0);
-				mainVBox.getChildren().clear();
-				mainVBox.getChildren().add(mainMenu);
-				mainVBox.getChildren().addAll(newVBox.getChildren());
-				
-				DepartmentListController controller = loader.getController();
-				controller.setDepartmentService(new DepartmentService());
-				controller.updateTableViewData();
-			}
-			catch (IOException e) {
-				Alerts.showAlert("Error", "Error loading view", e.getMessage(), AlertType.ERROR);
-			}
 	}
 }
