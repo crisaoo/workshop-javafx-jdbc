@@ -25,7 +25,7 @@ public class DepartmentDAOJDBC implements DepartmentDAO {
 		PreparedStatement st = null;
 
 		try {
-			st = conn.prepareStatement("INSERT INTO Department (name) VALUES ('?')", Statement.RETURN_GENERATED_KEYS);
+			st = conn.prepareStatement("INSERT INTO department (name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
 			st.setString(1, obj.getName());
 			
 			int rowsAffected = st.executeUpdate();
@@ -38,8 +38,7 @@ public class DepartmentDAOJDBC implements DepartmentDAO {
 			}
 			else 
 				throw new DBException("Unexpected error! No rows affected!");
-			
-			
+						
 		} 
 		catch (SQLException e) {
 			throw new DBException(e.getMessage());
@@ -56,7 +55,7 @@ public class DepartmentDAOJDBC implements DepartmentDAO {
 		try {
 			conn.setAutoCommit(false);
 			
-			st = conn.prepareStatement("UPDATE Department SET name = '?' WHERE id = '?' ");
+			st = conn.prepareStatement("UPDATE Department SET name = ? WHERE id = ? ");
 			st.setString(1, obj.getName());
 			st.setInt(2, obj.getId());
 			int rowsAffected = st.executeUpdate();
@@ -90,7 +89,7 @@ public class DepartmentDAOJDBC implements DepartmentDAO {
 		try {
 			conn.setAutoCommit(false);
 			
-			st = conn.prepareStatement("DELETE FROM Department WHERE id = '?'");
+			st = conn.prepareStatement("DELETE FROM Department WHERE id = ?");
 			st.setInt(1, id);
 			int rowsAffected = st.executeUpdate();
 			
@@ -122,7 +121,7 @@ public class DepartmentDAOJDBC implements DepartmentDAO {
 		ResultSet rs = null;
 
 		try {
-			st = conn.prepareStatement("SELECT * FROM Department WHERE id = '?'");
+			st = conn.prepareStatement("SELECT * FROM Department WHERE id = ?");
 			st.setInt(1, id);
 			rs = st.executeQuery();
 

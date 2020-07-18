@@ -57,8 +57,8 @@ public class SellerDAOJDBC implements SellerDAO {
 		
 		try {
 			conn.setAutoCommit(false);
-			st = conn.prepareStatement("UPDATE seller SET name = '?', email ='?', birthdate '?', basesalary = '?', departmentid ='?'"
-								+ "WHERE id ='?'");
+			st = conn.prepareStatement("UPDATE seller SET name = ?, email =?, birthdate ?, basesalary = ?, departmentid =?"
+								+ "WHERE id =?");
 			
 			st.setString(1, obj.getName());
 			st.setString(2, obj.getEmail());
@@ -96,7 +96,7 @@ public class SellerDAOJDBC implements SellerDAO {
 		
 		try {
 			conn.setAutoCommit(false);
-			st = conn.prepareStatement("DELETE FROM seller WHERE id = '?'");
+			st = conn.prepareStatement("DELETE FROM seller WHERE id = ?");
 			st.setInt(1, id);
 			
 			int rowsAffected = st.executeUpdate();
@@ -129,7 +129,7 @@ public class SellerDAOJDBC implements SellerDAO {
 		
 		try {
 			st = conn.prepareStatement("SELECT seller.*, department.name as departmentName FROM seller INNER JOIN department"
-										+ "ON seller.departmentId = department.id where seller.id = '?'");
+										+ "ON seller.departmentId = department.id where seller.id = ?");
 			st.setInt(1, id);
 			rs = st.executeQuery();
 			
@@ -153,7 +153,7 @@ public class SellerDAOJDBC implements SellerDAO {
 		
 		try {
 			st = conn.prepareStatement("SELECT seller.*, department.name AS departmentName FROM seller INNER JOIN department"
-										+ "ON seller.departmentId = department.id WHERE departmentId = '?'");
+										+ "ON seller.departmentId = department.id WHERE departmentId = ?");
 			st.setInt(1, department.getId());
 			rs = st.executeQuery();
 			
