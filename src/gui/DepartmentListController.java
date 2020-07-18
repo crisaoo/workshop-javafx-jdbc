@@ -43,7 +43,8 @@ public class DepartmentListController implements Initializable{
 	public void onBtnNewAction(ActionEvent event) {
 		// Método para retornar o palco principal, no qual o formulário irá "sobrepor"
 		Stage parentStage = Utils.currentStage(event);
-		createDialogForm("/gui/DepartmentForm.fxml", parentStage);
+		Department obj = new Department();
+		createDialogForm("/gui/DepartmentForm.fxml", parentStage, obj);
 	}
 	
 	public void setDepartmentService(DepartmentService service) {
@@ -61,10 +62,15 @@ public class DepartmentListController implements Initializable{
 		tableViewDepartment.setItems(obsList);
 	}
 
-	private void createDialogForm(String absoluteName, Stage parentStage) {
+	private void createDialogForm(String absoluteName, Stage parentStage, Department obj) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
+			
+			// Injetando dependência e atualizando o formulário
+			DepartmentFormController controller = loader.getController();
+			controller.setDepartment(obj);
+			controller.updateFormData();
 			
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Enter Department data");
