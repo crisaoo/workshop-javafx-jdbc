@@ -41,7 +41,7 @@ public class DepartmentListController implements Initializable{
 	
 	@FXML
 	public void onBtnNewAction(ActionEvent event) {
-		// Método para retornar o palco principal, no qual o formulário irá sobrepor
+		// Método para retornar o palco principal, no qual o formulário irá "sobrepor"
 		Stage parentStage = Utils.currentStage(event);
 		createDialogForm("/gui/DepartmentForm.fxml", parentStage);
 	}
