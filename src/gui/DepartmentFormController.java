@@ -94,9 +94,9 @@ public class DepartmentFormController implements Initializable{
 		
 		Integer id = Utils.tryParseToInt(txtId.getText());
 		String name = txtName.getText();
+		
 		if (name == null || name.trim().equals(""))
 			exception.addError("name", "Field can't be empty");
-
 		if (exception.getErrors().size() > 0)
 			throw exception;
 		
@@ -109,6 +109,7 @@ public class DepartmentFormController implements Initializable{
 	}
 	
 	private void setErrorMessages(Map <String, String> errors) {		
+		// No caso do department, só irá ter erro no campo name
 		if (errors.containsKey("name"))
 			lblErrorName.setText(errors.get("name"));
 	}

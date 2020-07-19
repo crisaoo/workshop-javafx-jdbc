@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class ValidationException extends RuntimeException{
 	private static final long serialVersionUID = 1L;
+	
+	// Vários campos podem dar erros(name, email, birthdate...), por isso um map
 	private Map<String, String> errors = new HashMap<>();
 	
 	public ValidationException(String msg) {
