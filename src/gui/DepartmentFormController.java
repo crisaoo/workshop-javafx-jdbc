@@ -1,9 +1,12 @@
 package gui;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import db.DBException;
+import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
@@ -20,6 +23,8 @@ import model.services.DepartmentService;
 public class DepartmentFormController implements Initializable{
 	private Department entity;
 	private DepartmentService service;
+	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
+	
 	@FXML
 	private TextField txtId;
 	@FXML
@@ -30,12 +35,25 @@ public class DepartmentFormController implements Initializable{
 	private Button btnSave;
 	@FXML
 	private Button btnCancel;
+
+	
+	public void setDepartment(Department entity) {
+		this.entity = entity;
+	}
+	
+	public void setDepartmentService (DepartmentService service) {
+		this.service = service;
+	}
+	
+	public void subscribeDataChangeListener(DataChangeListener listener) {
+		dataChangeListeners.add(listener);
+	}
 	
 	
 	@FXML
 	public void onBtnSaveAction(ActionEvent event) {
-		// Caso eu esqueça de injetar dependência lá no DepartmentListController
 		if (entity == null)
+		// Caso eu esqueça de injetar dependência lá no DepartmentListController
 			throw new IllegalStateException("Entity was null");
 		if (service == null)
 			throw new IllegalStateException("Service was null");
@@ -44,6 +62,7 @@ public class DepartmentFormController implements Initializable{
 		try {
 			entity = getFormData();
 			service.saveOrUpdate(entity);
+			notifyDataChangeListeners();
 			Utils.currentStage(event).close();
 			
 		}
@@ -58,14 +77,6 @@ public class DepartmentFormController implements Initializable{
 	}
 	
 	
-	public void setDepartment(Department entity) {
-		this.entity = entity;
-	}
-	
-	public void setDepartmentService (DepartmentService service) {
-		this.service = service;
-	}
-	
 	public void updateFormData() {
 		if (entity == null)
 			throw new IllegalStateException("Entity was null");
@@ -78,6 +89,11 @@ public class DepartmentFormController implements Initializable{
 		String name = txtName.getText();
 		
 		return new Department(id, name);
+	}
+	
+	private void notifyDataChangeListeners() {
+		for (DataChangeListener listener : dataChangeListeners)
+			listener.onDataChanged();
 	}
 	
 	
