@@ -178,8 +178,10 @@ public class SellerDAOJDBC implements SellerDAO {
 		ResultSet rs = null;
 		
 		try {
-			st = conn.prepareStatement("SELECT seller.*, department.name AS departmentName  FROM Seller INNER JOIN Department"
-										+ "ON seller.departmentId = department.id");
+			st = conn.prepareStatement(
+					"SELECT seller.*,department.Name as departmentName "
+					+ "FROM seller INNER JOIN department "
+					+ "ON seller.DepartmentId = department.Id ");
 			rs = st.executeQuery();
 			
 			List <Seller> allSellers = new ArrayList<>();
@@ -187,6 +189,7 @@ public class SellerDAOJDBC implements SellerDAO {
 			
 			while(rs.next()) {
 				Integer key = rs.getInt("departmentId");
+				
 				if(!departments.containsKey(key))
 					departments.put(key, instantiateDepartment(rs));
 				

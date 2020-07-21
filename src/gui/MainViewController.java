@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 import model.services.DepartmentService;
+import model.services.SellerService;
 
 public class MainViewController implements Initializable{
 	@FXML
@@ -28,12 +29,15 @@ public class MainViewController implements Initializable{
 	
 	@FXML
 	public void onMenuItemSellerAction() {
-		
+		loadView("/gui/SellerList.fxml", (SellerListController controller) ->{
+			controller.setSellerService(new SellerService());
+			controller.updateTableViewData();
+		});
 	}
 	
 	@FXML
 	public void onMenuItemDepartmentAction() {
-		loadView("/gui/DepartmentListView.fxml", (DepartmentListController controller) ->{
+		loadView("/gui/DepartmentList.fxml", (DepartmentListController controller) ->{
 			controller.setDepartmentService(new DepartmentService());
 			controller.updateTableViewData();
 		});
