@@ -1,6 +1,7 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -128,18 +129,30 @@ public class SellerFormController implements Initializable{
 	private Seller getFormData() {
 		ValidationException exception = new ValidationException("Validation Exception");
 		
-		Integer id = Integer.parseInt(txtId.getText());
+		Integer id = Utils.tryParseToInt(txtId.getText());
 		String name = txtName.getText();
 		String email = txtEmail.getText();
+		Double baseSalary = Utils.tryParseToDouble(txtBaseSalary.getText());
+		Department department = comboBoxDepartment.getValue();
 		Date birthDate = null;
-		Double baseSalary = Double.parseDouble(txtBaseSalary.getText());
+		if (dpBirthDate.getValue() == null)
+			exception.addError("birthDate", "Field can't be empty");
+		else {
+			Instant instant = Instant.from(dpBirthDate.getValue().atStartOfDay(ZoneId.systemDefault()));
+			birthDate = Date.from(instant);			 
+		}
 		
 		if (name == null || name.trim().equals(""))
 			exception.addError("name", "Field can't be empty");
+		if (email == null || email.trim().equals(""))
+			exception.addError("email", "Field can't be empty");
+		if (baseSalary.toString() == null || baseSalary.toString().trim().equals(""))
+			exception.addError("email", "Field can't be empty");
+		
 		if (exception.getErrors().size() > 0)
 			throw exception;
 
-		return new Seller(id, name, email, birthDate, baseSalary, null);
+		return new Seller(id, name, email, birthDate, baseSalary, department);
 	}
 	
 	private void notifyDataChangeListeners() {
@@ -147,9 +160,11 @@ public class SellerFormController implements Initializable{
 			listener.onDataChanged();
 	}
 	
-	private void setErrorMessages(Map<String, String> errors) {
-		if (errors.containsKey("name"))
-			lblErrorName.setText(errors.get("name"));
+	private void setErrorMessages(Map<String, String> errors) {		
+		lblErrorName.setText(errors.containsKey("name") ? errors.get("name") : "");
+		lblErrorEmail.setText(errors.containsKey("email") ? errors.get("email") : "");
+		lblErrorBirthDate.setText(errors.containsKey("birthDate") ? errors.get("birthDate") : "");
+		lblErrorBaseSalary.setText(errors.containsKey("baseSalary") ? errors.get("baseSalary") : "");
 	}
 
 	public void loadAssociatedObjects() {

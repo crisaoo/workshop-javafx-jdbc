@@ -30,18 +30,32 @@ public class SellerDAOJDBC implements SellerDAO {
 		PreparedStatement st = null;
 		
 		try {
-			st = conn.prepareStatement("INSERT INTO seller (name, email, birthdate, basesalary, departmentid)"
-								+ "VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			st = conn.prepareStatement(
+					"INSERT INTO seller "
+					+ "(Name, Email, BirthDate, BaseSalary, DepartmentId) "
+					+ "VALUES "
+					+ "(?, ?, ?, ?, ?)",
+					Statement.RETURN_GENERATED_KEYS);
+			
+			st.setString(1, obj.getName());
+			st.setString(2, obj.getEmail());
+			st.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+			st.setDouble(4, obj.getBaseSalary());
+			st.setInt(5, obj.getDepartment().getId());
+			
 			int rowsAffected = st.executeUpdate();
 			
-			if(rowsAffected > 0) {
+			if (rowsAffected > 0) {
 				ResultSet rs = st.getGeneratedKeys();
-				if(rs.next())
-					obj.setId(rs.getInt(1));
+				if (rs.next()) {
+					int id = rs.getInt(1);
+					obj.setId(id);
+				}
 				DB.closeResultSet(rs);
 			}
-			else
-				throw new DBException("Unexpected error: no rows affected.");
+			else {
+				throw new DBException("Unexpected error! No rows affected!");
+			}
 		}
 		catch(SQLException e) {
 			throw new DBException(e.getMessage());
