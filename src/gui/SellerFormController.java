@@ -146,8 +146,8 @@ public class SellerFormController implements Initializable{
 			exception.addError("name", "Field can't be empty");
 		if (email == null || email.trim().equals(""))
 			exception.addError("email", "Field can't be empty");
-		if (baseSalary.toString() == null || baseSalary.toString().trim().equals(""))
-			exception.addError("email", "Field can't be empty");
+		if (baseSalary == null )
+			exception.addError("baseSalary", "Field can't be empty");
 		
 		if (exception.getErrors().size() > 0)
 			throw exception;
