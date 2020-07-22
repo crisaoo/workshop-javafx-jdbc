@@ -2,6 +2,7 @@ package gui;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -18,13 +19,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import model.entities.Department;
+import model.entities.Seller;
 import model.exceptions.ValidationException;
-import model.services.DepartmentService;
+import model.services.SellerService;
 
-public class DepartmentFormController implements Initializable{
-	private Department entity;
-	private DepartmentService service;
+public class SellerFormController implements Initializable{
+	private Seller entity;
+	private SellerService service;
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 	
 	@FXML
@@ -32,18 +33,24 @@ public class DepartmentFormController implements Initializable{
 	@FXML
 	private TextField txtName;
 	@FXML
-	private Label lblErrorName;
+	private TextField txtEmail;
+	@FXML
+	private TextField txtBirthDate;
+	@FXML
+	private TextField txtBaseSalary;
 	@FXML
 	private Button btnSave;
 	@FXML
 	private Button btnCancel;
-
+	@FXML
+	private Label lblErrorName;
 	
-	public void setDepartment(Department entity) {
+	
+	public void setSeller(Seller entity) {
 		this.entity = entity;
 	}
 	
-	public void setDepartmentService (DepartmentService service) {
+	public void setSellerService(SellerService service) {
 		this.service = service;
 	}
 	
@@ -51,24 +58,20 @@ public class DepartmentFormController implements Initializable{
 		dataChangeListeners.add(listener);
 	}
 	
-	
 	@FXML
 	public void onBtnSaveAction(ActionEvent event) {
 		if (entity == null)
-		// Caso eu esqueça de injetar dependência lá no DepartmentListController
-			throw new IllegalStateException("Entity was null");
-		if (service == null)
+			throw new IllegalStateException("Entity was null");	
+		if (service== null)
 			throw new IllegalStateException("Service was null");
-		
-		// O método saveOrUpdate pode lançar uma exceção, em vez disso, vamos lançar um alert
+	
 		try {
 			entity = getFormData();
 			service.saveOrUpdate(entity);
-			notifyDataChangeListeners();		// Atualizar os dados da tabela em tempo real
-			Utils.currentStage(event).close();	// Fechar a janela de formulário
-			
+			notifyDataChangeListeners();
+			Utils.currentStage(event).close();
 		}
-		catch (ValidationException e) {
+		catch(ValidationException e) {
 			setErrorMessages(e.getErrors());
 		}
 		catch (DBException e) {
@@ -81,27 +84,32 @@ public class DepartmentFormController implements Initializable{
 		Utils.currentStage(event).close();
 	}
 	
-	
 	public void updateFormData() {
 		if (entity == null)
 			throw new IllegalStateException("Entity was null");
 		
 		txtId.setText(String.valueOf(entity.getId()));
 		txtName.setText(entity.getName());
+		txtEmail.setText(entity.getEmail());
+		txtBirthDate.setText(String.valueOf(entity.getBirthDate()));
+		txtBaseSalary.setText(String.valueOf(entity.getBaseSalary()));
 	}
 	
-	private Department getFormData() {
-		ValidationException exception = new ValidationException("Validation error");
+	private Seller getFormData() {
+		ValidationException exception = new ValidationException("Validation Exception");
 		
-		Integer id = Utils.tryParseToInt(txtId.getText());
+		Integer id = Integer.parseInt(txtId.getText());
 		String name = txtName.getText();
+		String email = txtEmail.getText();
+		Date birthDate = null;
+		Double baseSalary = Double.parseDouble(txtBaseSalary.getText());
 		
 		if (name == null || name.trim().equals(""))
 			exception.addError("name", "Field can't be empty");
 		if (exception.getErrors().size() > 0)
 			throw exception;
-		
-		return new Department(id, name);
+
+		return new Seller(id, name, email, birthDate, baseSalary, null);
 	}
 	
 	private void notifyDataChangeListeners() {
@@ -109,12 +117,11 @@ public class DepartmentFormController implements Initializable{
 			listener.onDataChanged();
 	}
 	
-	private void setErrorMessages(Map <String, String> errors) {		
-		// No caso do department, só irá ter erro no campo name
+	private void setErrorMessages(Map<String, String> errors) {
 		if (errors.containsKey("name"))
 			lblErrorName.setText(errors.get("name"));
 	}
-	
+
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
