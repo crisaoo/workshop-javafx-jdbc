@@ -211,7 +211,7 @@ public class SellerDAOJDBC implements SellerDAO {
 		Integer id = rs.getInt("id");
 		String name = rs.getString("name");
 		String email = rs.getString("email");
-		Date birthDate = rs.getDate("birthDate");
+		java.util.Date birthDate = new java.util.Date(rs.getTimestamp("birthDate").getTime());
 		Double baseSalary = rs.getDouble("baseSalary");
 		Department department = instantiateDepartment(rs);
 		return new Seller(id, name, email, birthDate, baseSalary, department);
@@ -221,7 +221,7 @@ public class SellerDAOJDBC implements SellerDAO {
 		Integer id = rs.getInt("id");
 		String name = rs.getString("name");
 		String email = rs.getString("email");
-		Date birthDate = rs.getDate("birthDate");
+		java.util.Date birthDate = new java.util.Date(rs.getTimestamp("birthDate").getTime());
 		Double baseSalary = rs.getDouble("baseSalary");
 		return new Seller(id, name, email, birthDate, baseSalary, department);
 	}
